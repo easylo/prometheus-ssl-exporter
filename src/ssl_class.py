@@ -31,7 +31,7 @@ class SslCollector(object):
   def _collect_metrics(self, domain):
     
     logging.info('Starting scan of domain: {0} , port {1}'.format(domain, self.ssl_port))
-    self._ssl_certificate_days_valid( ssl_port=self.ssl_port, domain=domain, timeout=60)
+    self._ssl_certificate_days_valid( ssl_port=self.ssl_port, domain=domain, timeout=10)
     logging.info('Finished scan')
 
   def _ssl_certificate_days_valid(self, ssl_port, domain, timeout):
@@ -44,10 +44,12 @@ class SslCollector(object):
       conn = context.wrap_socket(socket.socket(socket.AF_INET), server_hostname=domain)
       conn.settimeout(timeout)
 
+      ssl_info = {}
       try:
           conn.connect((domain, ssl_port))
           ssl_info = conn.getpeercert()
-      # except socket.timeout:
+      except socket.timeout as e:
+          logging.debug("Timeout : {0} on port {1}, got error {2}".format(domain, ssl_port, e))
           # continue
       # except ConnectionRefusedError:
           # continue
