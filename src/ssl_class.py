@@ -81,7 +81,7 @@ class SslCollector(object):
           metric_id = ('%s_%s' % (self.METRIC_PREFIX, domain )).lower()
           metric_description = 'Number of days before the certificate expires'
           labels =  ['commonName', 'domain', 'issuer', 'serialNumber','not_before','not_after','organization_name']
-          self.gauges[metric_id] = GaugeMetricFamily(metric_id, '%s' % metric_description, value=None, labels=labels)
+          self.gauges[metric_id] = GaugeMetricFamily(self.METRIC_PREFIX, '%s' % metric_description, value=None, labels=labels)
           self.gauges[metric_id].add_metric([ common_name, domain, issuer, serial_number, not_before, not_after, organization_name], days_valid.days)
 
       else:
