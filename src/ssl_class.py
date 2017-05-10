@@ -19,6 +19,10 @@ class SslCollector(object):
         self.METRIC_DOMAIN = 'domain'
         
   def collect(self):
+
+    metric_description = 'Number of days before the certificate expires'
+    labels =  ['commonName', 'domain', 'issuer', 'serialNumber','not_before','not_after','organization_name']
+    self.gauges[self.METRIC_PREFIX] = GaugeMetricFamily(self.METRIC_PREFIX, '%s' % metric_description, value=None, labels=labels)
     
     for domain in self.domains:
       self._collect_metrics(domain)
@@ -79,12 +83,8 @@ class SslCollector(object):
           #     try:
           #         hostname = socket.gethostbyaddr(ip)[0]
           #     except socket.herror:
-          #         hostname = ""
-          metric_id = ('%s_%s' % (self.METRIC_PREFIX, domain )).lower()
-          metric_description = 'Number of days before the certificate expires'
-          labels =  ['commonName', 'domain', 'issuer', 'serialNumber','not_before','not_after','organization_name']
-          self.gauges[metric_id] = GaugeMetricFamily(self.METRIC_PREFIX, '%s' % metric_description, value=None, labels=labels)
-          self.gauges[metric_id].add_metric([ common_name, domain, issuer, serial_number, not_before, not_after, organization_name], days_valid.days)
+          #         hostname = ""                  
+          self.gauges[self.METRIC_PREFIX].add_metric([ common_name, domain, issuer, serial_number, not_before, not_after, organization_name], days_valid.days)
 
       else:
           logging.warning("No certificate information received for {0} on port {1}".format(domain, ssl_port))
