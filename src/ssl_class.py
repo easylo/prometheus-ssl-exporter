@@ -33,9 +33,14 @@ class SslCollector(object):
 
 
   def _collect_metrics(self, domain):
-    
-    logging.info('Starting scan of domain: {0} , port {1}'.format(domain, self.ssl_port))
-    self._ssl_certificate_days_valid( ssl_port=self.ssl_port, domain=domain, timeout=10)
+    domain_port = domain.split(':')
+    if len(domain_port) > 1:
+        domain = domain_port[0]
+        port = int(domain_port[1])
+    else:
+        port = self.ssl_port
+    logging.info('Starting scan of domain: {0} , port {1}'.format(domain, port))
+    self._ssl_certificate_days_valid( ssl_port=port, domain=domain, timeout=10)
     logging.info('Finished scan')
 
   def _ssl_certificate_days_valid(self, ssl_port, domain, timeout):
